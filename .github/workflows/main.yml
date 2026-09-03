@@ -1,0 +1,34 @@
+name: Scraping Prix Donner
+
+on:
+  schedule:
+    # S'exécute automatiquement tous les jours à 06:00 UTC (8h00 heure française)
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Permet de lancer le script à la main quand vous le voulez
+
+jobs:
+  run-python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installer les dépendances
+        run: |
+          pip install requests pandas openpyxl
+
+      - name: Exécuter le script de scraping
+        run: python donner.py
+
+      - name: Enregistrer le fichier Excel sur GitHub
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add Prix_Donner_TTC.xlsx
+          git commit -m "Mise à jour automatique des prix Donner" || exit 0
+          git push
