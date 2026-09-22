@@ -20,6 +20,9 @@ def scraper_donner():
             
         for p in produits:
             titre = p.get('title')
+            handle = p.get('handle') # Permet de construire l'URL de la page produit
+            url_produit = f"https://fr.donnermusic.com/products/{handle}" if handle else ""
+            
             for v in p.get('variants', []):
                 nom_variante = v.get('title')
                 designation = f"{titre} - {nom_variante}" if nom_variante and nom_variante != "Default Title" else titre
@@ -27,7 +30,8 @@ def scraper_donner():
 
                 liste_produits.append({
                     "Désignation du produit": designation,
-                    "Prix TTC (€)": prix_ttc
+                    "Prix TTC (€)": prix_ttc,
+                    "URL du produit": url_produit
                 })
         page += 1
 
@@ -39,8 +43,9 @@ def scraper_donner():
         worksheet = writer.sheets["Prix"]
         worksheet.column_dimensions['A'].width = 60
         worksheet.column_dimensions['B'].width = 18
+        worksheet.column_dimensions['C'].width = 45  # Ajustement de la largeur pour l'URL
 
-    print(f"Terminé ! {len(liste_produits)} produits enregistrés.")
+    print(f"Terminé ! {len(liste_produits)} produits enregistrés avec leurs URLs.")
 
 if __name__ == "__main__":
     scraper_donner()
